@@ -47,3 +47,10 @@ class TripleTopClose(ITripleRule):
                 and NotHorizontal.judge(data4) and TopCloseRule.judge(data1, data2) and TopCloseRule.judge(data2, data3) \
                 and TopCloseRule.judge(data3, data4) and data1.open >= data2.close * 1.02 and data1.open <= data2.close * 1.05
 
+
+class TripleTopCloseBad(ITripleRule):
+    @classmethod
+    def judge(cls, data1, data2, data3, data4):
+        return NotHorizontal.judge(data1) and NotHorizontal.judge(data2) and NotHorizontal.judge(data3) \
+                and NotHorizontal.judge(data4) and TopCloseRule.judge(data2, data3) and TopCloseRule.judge(data3, data4) \
+               and data1.open >= data2.close * 1.02 and data1.open <= data2.close * 1.05 and data1.close<data2.close

@@ -15,7 +15,8 @@ class TripleTop(IAnalysis):
         for i in history.index[3:]:
 #            if NotHorizontal.judge(history.iloc[i]) and TopCloseRule.judge(history.iloc[i], history.iloc[i-1]) \
 #                    and TopCloseRule.judge(history.iloc[i-1], history.iloc[i-2]):
-            if TripleTopClose.judge(history.loc[i], history.loc[i-1], history.loc[i-2], history.loc[i-3]):
+#            if TripleTopClose.judge(history.loc[i], history.loc[i-1], history.loc[i-2], history.loc[i-3]):
+            if TripleTopCloseBad.judge(history.loc[i], history.loc[i-1], history.loc[i-2], history.loc[i-3]):
                 # Make sure prints title line to console only if necessary.
                 if not has_result:
                     print("TripleTop date for {}:".format(stock))
