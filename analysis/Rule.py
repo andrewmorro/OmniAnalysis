@@ -16,10 +16,16 @@ class IDoubleRule(IRule):
         return None
 
 
+class ITripleRule(IRule):
+    @classmethod
+    def judge(cls, data1, data2, data3):
+        return None
+
+
 class TopCloseRule(IDoubleRule):
     @classmethod
     def judge(cls, data1, data2):
-        if data1.close == round(data2.close*1.1, 2):
+        if data1.close == round(data2.close * 1.1, 2):
             return True
         else:
             return False
@@ -32,4 +38,12 @@ class NotHorizontal(ISingleRule):
             return True
         else:
             return False
+
+
+class TripleTopClose(ITripleRule):
+    @classmethod
+    def judge(cls, data1, data2, data3, data4):
+        return NotHorizontal.judge(data1) and NotHorizontal.judge(data2) and NotHorizontal.judge(data3) \
+                and NotHorizontal.judge(data4) and TopCloseRule.judge(data1, data2) and TopCloseRule.judge(data2, data3) \
+                and TopCloseRule.judge(data3, data4) and data1.open >= data2.close * 1.02 and data1.open <= data2.close * 1.05
 
