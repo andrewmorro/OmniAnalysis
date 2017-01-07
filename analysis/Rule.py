@@ -1,56 +1,61 @@
 class IRule(object):
     @classmethod
-    def judge(cls):
+    def judge(cls, data, index):
         return None
 
-
-class ISingleRule(IRule):
+#涨停收盘
+class TopCloseRule(IRule):
     @classmethod
-    def judge(cls, data):
-        return None
-
-
-class IDoubleRule(IRule):
-    @classmethod
-    def judge(cls, data1, data2):
-        return None
-
-
-class ITripleRule(IRule):
-    @classmethod
-    def judge(cls, data1, data2, data3):
-        return None
-
-
-class TopCloseRule(IDoubleRule):
-    @classmethod
-    def judge(cls, data1, data2):
+    def judge(cls, data, index):
+        data1 = data.loc[index]
+        data2 = data.loc[index-1]
         if data1.close == round(data2.close * 1.1, 2):
             return True
         else:
             return False
 
-
-class NotHorizontal(ISingleRule):
+#非一字板
+class NotHorizontal(IRule):
     @classmethod
-    def judge(cls, data):
-        if data.high != data.low:
+    def judge(cls, data, index):
+        if data.loc[index].high != data.loc[index].low:
             return True
         else:
             return False
 
-
-class TripleTopClose(ITripleRule):
+#多日非一字板
+class NotHorizontalMulti(IRule):
     @classmethod
-    def judge(cls, data1, data2, data3, data4):
-        return NotHorizontal.judge(data1) and NotHorizontal.judge(data2) and NotHorizontal.judge(data3) \
-                and NotHorizontal.judge(data4) and TopCloseRule.judge(data1, data2) and TopCloseRule.judge(data2, data3) \
-                and TopCloseRule.judge(data3, data4) and data1.open >= data2.close * 1.02 and data1.open <= data2.close * 1.05
+    def judge(cls, data, index_list):
+        result = True
+        for index in index_list:
+            result &= NotHorizontal.judge(data, index)
+            if not result:
+                break
+        return result
 
-
-class TripleTopCloseBad(ITripleRule):
+#实体三连板，当日高开2-5%
+class TripleTopClose(IRule):
     @classmethod
-    def judge(cls, data1, data2, data3, data4):
-        return NotHorizontal.judge(data1) and NotHorizontal.judge(data2) and NotHorizontal.judge(data3) \
-                and NotHorizontal.judge(data4) and TopCloseRule.judge(data2, data3) and TopCloseRule.judge(data3, data4) \
-               and data1.open >= data2.close * 1.02 and data1.open <= data2.close * 1.05 and data1.close<data2.close
+    def judge(cls, data, index):
+        data1 = data.loc[index]
+        data2 = data.loc[index-1]
+        data3 = data.loc[index-2]
+        data4 = data.loc[index-3]
+        start = index-2
+        end = index+1
+        return NotHorizontalMulti.judge(data, range(start, end)) and TopCloseRule.judge(data,index) and TopCloseRule.judge(data,index-1) \
+                and TopCloseRule.judge(data,index-2) and data1.open >= data2.close * 1.02 and data1.open <= data2.close * 1.05
+
+
+class TripleTopCloseBad(IRule):
+    @classmethod
+    def judge(cls, data, index):
+        data1 = data.loc[index]
+        data2 = data.loc[index-1]
+        data3 = data.loc[index-2]
+        data4 = data.loc[index-3]
+        start = index-3
+        end = index+1
+        return NotHorizontalMulti.judge(data, range(start, end)) and TopCloseRule.judge(data,index) and TopCloseRule.judge(data,index-1) \
+                and TopCloseRule.judge(data,index-2) and data1.open >= data2.close * 1.02 and data1.open <= data2.close * 1.05 and data1.close<data2.close
