@@ -3,8 +3,9 @@ class IRule(object):
     def judge(cls, data, index):
         return None
 
+
 #涨停收盘
-class TopCloseRule(IRule):
+class TopClose(IRule):
     @classmethod
     def judge(cls, data, index):
         data1 = data.loc[index]
@@ -34,7 +35,7 @@ class NotHorizontalMulti(IRule):
                 break
         return result
 
-#实体三连板，当日高开2-5%
+#实体两连板后，当日高开2-5%，收板
 class TripleTopClose(IRule):
     @classmethod
     def judge(cls, data, index):
@@ -44,10 +45,10 @@ class TripleTopClose(IRule):
         data4 = data.loc[index-3]
         start = index-2
         end = index+1
-        return NotHorizontalMulti.judge(data, range(start, end)) and TopCloseRule.judge(data,index) and TopCloseRule.judge(data,index-1) \
-                and TopCloseRule.judge(data,index-2) and data1.open >= data2.close * 1.02 and data1.open <= data2.close * 1.05
+        return NotHorizontalMulti.judge(data, range(start, end)) and TopClose.judge(data, index) and TopClose.judge(data, index - 1) \
+               and TopClose.judge(data, index - 2) and data1.open >= data2.close * 1.02 and data1.open <= data2.close * 1.05
 
-
+#实体两连板后，闷杀
 class TripleTopCloseBad(IRule):
     @classmethod
     def judge(cls, data, index):
@@ -57,5 +58,5 @@ class TripleTopCloseBad(IRule):
         data4 = data.loc[index-3]
         start = index-3
         end = index+1
-        return NotHorizontalMulti.judge(data, range(start, end)) and TopCloseRule.judge(data,index) and TopCloseRule.judge(data,index-1) \
-                and TopCloseRule.judge(data,index-2) and data1.open >= data2.close * 1.02 and data1.open <= data2.close * 1.05 and data1.close<data2.close
+        return NotHorizontalMulti.judge(data, range(start, end)) and TopClose.judge(data, index - 1) \
+               and TopClose.judge(data, index - 2) and data1.high < data2.close
