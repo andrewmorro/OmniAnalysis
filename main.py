@@ -14,7 +14,9 @@ if test:
     rule_name = 'TripleTopClose'
     rule = Rule.Rise(3,0.3)
     df = tt.analysisByRule(rule,stock_list,'2017-02-01')
+
     #df = tt.analysisByRule(rule,['000877'],'2017-02-01')
+
     #df = tt.analysisByRuleName(rule_name,['000877'],'2017-02-01')
     print(df)
 
