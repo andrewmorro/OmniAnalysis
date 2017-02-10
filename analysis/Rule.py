@@ -4,6 +4,17 @@ class IRule(object):
         return None
 
 
+# N天涨幅M
+class Rise(IRule):
+    @classmethod
+    def judge(cls, data, index, n, pct):
+        data1 = data.loc[index]
+        data2 = data.loc[index - n - 1]
+        if data1.high/data2.close >= 1+pct:
+            return True
+        else:
+            return False
+
 #涨停收盘
 class TopClose(IRule):
     @classmethod

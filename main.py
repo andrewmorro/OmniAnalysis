@@ -3,16 +3,17 @@ from analysis import RuleConfig
 import tushare as ts
 
 
-#test = False
-test = True
+test = False
+#test = True
 
 rule_name = 'TripleTopClose'
 
-print(RuleConfig.rule[rule_name])
-
 tt = GeneralAnalysis()
 if test:
-    tt.analysis(['603777'], rule_name)
+    df = tt.analysis(['603777'], rule_name)
 else:
     stock_list = ts.get_today_all()['code']
-    tt.analysis(stock_list, rule_name)
+    df_good = tt.analysis(stock_list, 'TripleTopClose')
+    df_bad = tt.analysis(stock_list, 'TripleTopCloseBad')
+    df_good.to_excel(r'F:\BaiduSync\trade\文档\总结\量化\{}.xlsx'.format(RuleConfig.rule['TripleTopClose']), sheet_name='sheet1')
+    df_bad.to_excel(r'F:\BaiduSync\trade\文档\总结\量化\{}.xlsx'.format(RuleConfig.rule['TripleTopCloseBad']), sheet_name='sheet1')
