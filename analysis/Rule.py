@@ -6,11 +6,14 @@ class IRule(object):
 
 # N天涨幅M
 class Rise(IRule):
-    @classmethod
-    def judge(cls, data, index, n, pct):
+    def __init__(self, n, pct):
+        self.n = n
+        self.pct = pct
+
+    def judge(self, data, index):
         data1 = data.loc[index]
-        data2 = data.loc[index - n - 1]
-        if data1.high/data2.close >= 1+pct:
+        data2 = data.loc[index - self.n]
+        if data1.high / data2.close >= 1 + self.pct:
             return True
         else:
             return False
@@ -46,7 +49,7 @@ class NotHorizontalMulti(IRule):
                 break
         return result
 
-#实体两连板后，当日高开2-5%，收板
+#实体两连板后，当日高开2-6%，收板
 class TripleTopClose(IRule):
     @classmethod
     def judge(cls, data, index):
@@ -57,7 +60,7 @@ class TripleTopClose(IRule):
         start = index-2
         end = index+1
         return NotHorizontalMulti.judge(data, range(start, end)) and TopClose.judge(data, index) and TopClose.judge(data, index - 1) \
-               and TopClose.judge(data, index - 2) and data1.open >= data2.close * 1.02 and data1.open <= data2.close * 1.05
+               and TopClose.judge(data, index - 2) and data1.open >= data2.close * 1.02 and data1.open <= data2.close * 1.06
 
 #实体两连板后，闷杀
 class TripleTopCloseBad(IRule):
