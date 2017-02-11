@@ -109,8 +109,16 @@ class TripleTopCloseBad(IRule):
         data2 = data.loc[index-1]
         start = index-3
         end = index+1
-        return NotHorizontalMulti(3).judge(data, 3) and TopClose.judge(data, index - 1) \
+        return NotHorizontalMulti(3).judge(data, index) and TopClose.judge(data, index - 1) \
                and TopClose.judge(data, index - 2) and data1.high < data2.close
+
+
+class DoubleTopClose(IRule):
+    @classmethod
+    def judge(cls, data, index):
+        return NotHorizontalMulti(2).judge(data, index) and TopClose.judge(data, index) \
+               and TopClose.judge(data, index - 1)
+
 
 
 class Strategy(IRule):

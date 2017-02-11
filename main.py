@@ -2,7 +2,7 @@ from analysis.GeneralAnalysis import GeneralAnalysis
 from analysis import RuleConfig
 from analysis import Rule
 import tushare as ts
-
+import datetime
 
 #test = False
 test = True
@@ -11,19 +11,20 @@ test = True
 tt = GeneralAnalysis()
 if test:
     stock_list = ts.get_today_all()['code']
-    rule_name = 'TripleTopClose'
+    rule_name = 'DoubleTopClose'
     rise = Rule.Rise(3,0.3)
-    notHori = Rule.NotHorizontalMulti(3)
+    notHori = Rule.NotHorizontalMulti(2)
     strategy = Rule.Strategy()
     strategy.addRule(rise)
     strategy.addRule(notHori)
 
-    df = tt.analysisByRule(strategy,stock_list,'2017-02-01')
+    #df = tt.analysisByRule(strategy,stock_list,'2017-02-01')
 
     #df = tt.analysisByRule(rule,['000877'],'2017-02-01')
 
-    #df = tt.analysisByRuleName(rule_name,['000877'],'2017-02-01')
+    df = tt.analysisByRuleName(rule_name, stock_list, '2016-07-01')
     print(df)
+    df.to_excel(r'F:\BaiduSync\trade\文档\总结\量化\{}-{}.xlsx'.format(RuleConfig.rule['DoubleTopClose'],datetime.datetime.now().strftime('%Y-%m-%d')), sheet_name='2连板')
 
 
 else:

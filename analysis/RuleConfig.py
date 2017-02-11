@@ -12,4 +12,5 @@ rule = dict(
     VolUp = '放量',
     VolDown = '缩量',
     VolExplode = '爆量',
+    DoubleTopClose = '实体两连板'
 )
