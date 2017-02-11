@@ -8,5 +8,8 @@ rule = dict(
     Rule13Percent = '强势股回调13%',
     Ma5Return = '强势股踩5日线',
     Ma10Return = '强势股踩10日线',
-    Day6Return = '强势股回调6天'
+    Day6Return = '强势股回调6天',
+    VolUp = '放量',
+    VolDown = '缩量',
+    VolExplode = '爆量',
 )

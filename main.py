@@ -12,8 +12,13 @@ tt = GeneralAnalysis()
 if test:
     stock_list = ts.get_today_all()['code']
     rule_name = 'TripleTopClose'
-    rule = Rule.Rise(3,0.3)
-    df = tt.analysisByRule(rule,stock_list,'2017-02-01')
+    rise = Rule.Rise(3,0.3)
+    notHori = Rule.NotHorizontalMulti(3)
+    strategy = Rule.Strategy()
+    strategy.addRule(rise)
+    strategy.addRule(notHori)
+
+    df = tt.analysisByRule(strategy,stock_list,'2017-02-01')
 
     #df = tt.analysisByRule(rule,['000877'],'2017-02-01')
 
