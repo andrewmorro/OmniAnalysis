@@ -12,5 +12,7 @@ rule = dict(
     VolUp = '放量',
     VolDown = '缩量',
     VolExplode = '爆量',
-    DoubleTopClose = '实体两连板'
+    DoubleTopClose = '实体两连板',
+    TopCloseVolUp = '一涨停后放量阳线',
+    TopHatched = '涨停未封',
 )

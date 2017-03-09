@@ -119,6 +119,12 @@ class DoubleTopClose(IRule):
         return NotHorizontalMulti(2).judge(data, index) and TopClose.judge(data, index) \
                and TopClose.judge(data, index - 1)
 
+class TopHatched(IRule):
+    @classmethod
+    def judge(cls, data, index):
+        data1 = data.loc[index]
+        data2 = data.loc[index-1]
+        return data1.high == round(data2.close * 1.1, 2) and data1.high > data1.close and data1.high > data1.open
 
 
 class Strategy(IRule):

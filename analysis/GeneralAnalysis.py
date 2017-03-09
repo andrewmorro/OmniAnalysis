@@ -24,7 +24,7 @@ class GeneralAnalysis(IAnalysis):
         df = DataFrame(columns=['Code', 'Date'])
         for stock in stock_list:
             history = ts.get_k_data(stock, start, end)
-            for i in history.index[3:]:
+            for i in history.index[1:]:
                 if rule.judge(history, i):
                     df.loc[len(df)] = [stock, history.loc[i].date]
         return df
