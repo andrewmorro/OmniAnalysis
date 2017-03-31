@@ -126,6 +126,12 @@ class TopHatched(IRule):
         data2 = data.loc[index-1]
         return data1.high == round(data2.close * 1.1, 2) and data1.high > data1.close and data1.high > data1.open
 
+class HighTurnover(IRule):
+    @classmethod
+    def judge(cls, data, index):
+        data1 = data.loc[index]
+        return data1.turnover > 60
+
 
 class Strategy(IRule):
     def __init__(self, ruleset = []):

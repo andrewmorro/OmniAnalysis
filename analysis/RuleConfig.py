@@ -15,4 +15,5 @@ rule = dict(
     DoubleTopClose = '实体两连板',
     TopCloseVolUp = '一涨停后放量阳线',
     TopHatched = '涨停未封',
+    HighTurnover = '高换手',
 )

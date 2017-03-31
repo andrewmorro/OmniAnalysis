@@ -23,8 +23,10 @@ class GeneralAnalysis(IAnalysis):
             start = (datetime.datetime.now()-datetime.timedelta(days=7)).strftime('%Y-%m-%d')
         df = DataFrame(columns=['Code', 'Date'])
         for stock in stock_list:
-            history = ts.get_k_data(stock, start, end)
+            history = ts.get_hist_data(stock, start, end)
+            # = ts.get_k_data(stock, start, end)
             for i in history.index[1:]:
                 if rule.judge(history, i):
-                    df.loc[len(df)] = [stock, history.loc[i].date]
+                    #df.loc[len(df)] = [stock, history.loc[i].date]
+                    df.loc[len(df)] = [stock, history.loc[i].name]
         return df
