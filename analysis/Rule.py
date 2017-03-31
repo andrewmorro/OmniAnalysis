@@ -126,6 +126,7 @@ class TopHatched(IRule):
         data2 = data.loc[index-1]
         return data1.high == round(data2.close * 1.1, 2) and data1.high > data1.close and data1.high > data1.open
 
+# must use get_hist_data api
 class HighTurnover(IRule):
     @classmethod
     def judge(cls, data, index):

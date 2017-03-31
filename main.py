@@ -10,8 +10,8 @@ test = True
 
 tt = GeneralAnalysis()
 if test:
-    stock_list = ts.get_today_all()['code']
     rule_name = 'HighTurnover'
+    stock_list = ts.get_today_all()['code']
     rise = Rule.Rise(3,0.3)
     notHori = Rule.NotHorizontalMulti(2)
     strategy = Rule.Strategy()
@@ -22,9 +22,9 @@ if test:
 
     #df = tt.analysisByRule(rule,['000877'],'2017-02-01')
 
-    df = tt.analysisByRuleName(rule_name, stock_list,'2016-01-01')
+    df = tt.analysisByRuleName(rule_name, stock_list,'2016-01-01', hist=True)
     print(df)
-    #df.to_excel(r'F:\BaiduSync\trade\文档\总结\量化\{}-{}.xlsx'.format(RuleConfig.rule[rule_name],datetime.datetime.now().strftime('%Y-%m-%d')), sheet_name='2连板')
+    df.to_excel(r'F:\BaiduSync\trade\总结\量化\{}-{}.xlsx'.format(RuleConfig.rule[rule_name],datetime.datetime.now().strftime('%Y-%m-%d')), sheet_name=RuleConfig.rule[rule_name])
 
 
 else:
