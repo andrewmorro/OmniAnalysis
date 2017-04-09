@@ -11,7 +11,12 @@ test = True
 tt = GeneralAnalysis()
 if test:
     rule_name = 'HighTurnover'
+    ts.get_today_all().to_excel(r'F:\BaiduSync\trade\总结\量化\stock_list.xlsx')
+    exit(0)
+
     stock_list = ts.get_today_all()['code']
+
+
     rise = Rule.Rise(3,0.3)
     notHori = Rule.NotHorizontalMulti(2)
     strategy = Rule.Strategy()

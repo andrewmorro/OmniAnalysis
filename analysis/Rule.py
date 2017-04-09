@@ -131,7 +131,7 @@ class HighTurnover(IRule):
     @classmethod
     def judge(cls, data, index):
         data1 = data.loc[index]
-        return data1.turnover > 60
+        return data1.turnover > 70
 
 
 class Strategy(IRule):
