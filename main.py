@@ -10,9 +10,9 @@ test = True
 
 tt = GeneralAnalysis()
 if test:
-    rule_name = 'HighTurnover'
-    ts.get_today_all().to_excel(r'F:\BaiduSync\trade\总结\量化\stock_list.xlsx')
-    exit(0)
+    rule_name = 'FuelUp'
+    #ts.get_today_all().to_excel(r'F:\BaiduSync\trade\总结\量化\stock_list.xlsx')
+    #exit(0)
 
     stock_list = ts.get_today_all()['code']
 
@@ -25,9 +25,9 @@ if test:
 
     #df = tt.analysisByRule(strategy,stock_list,'2017-02-01')
 
-    #df = tt.analysisByRule(rule,['000877'],'2017-02-01')
+    df = tt.analysisByRuleName(rule_name,stock_list,'2017-01-01')
 
-    df = tt.analysisByRuleName(rule_name, stock_list,'2016-01-01', hist=True)
+    #df = tt.analysisByRuleName(rule_name, stock_list,'2017-01-01')
     print(df)
     df.to_excel(r'F:\BaiduSync\trade\总结\量化\{}-{}.xlsx'.format(RuleConfig.rule[rule_name],datetime.datetime.now().strftime('%Y-%m-%d')), sheet_name=RuleConfig.rule[rule_name])
 

@@ -24,14 +24,18 @@ class GeneralAnalysis(IAnalysis):
             start = (datetime.datetime.now()-datetime.timedelta(days=7)).strftime('%Y-%m-%d')
         df = DataFrame(columns=['Code', 'Date'])
         for stock in stock_list:
-            if hist:
-                history = ts.get_hist_data(stock, start, end)
-            else:
-                history = ts.get_k_data(stock, start, end)
-            for i in history.index[1:]:
-                if rule.judge(history, i):
-                    if hist:
-                        df.loc[len(df)] = [stock, history.loc[i].name]
-                    else:
-                        df.loc[len(df)] = [stock, history.loc[i].date]
+            print(stock)
+            try:
+                if hist:
+                    history = ts.get_hist_data(stock, start, end)
+                else:
+                    history = ts.get_k_data(stock, start, end)
+                for i in history.index[1:]:
+                    if rule.judge(history, i):
+                        if hist:
+                            df.loc[len(df)] = [stock, history.loc[i].name]
+                        else:
+                            df.loc[len(df)] = [stock, history.loc[i].date]
+            except Exception:
+                continue
         return df

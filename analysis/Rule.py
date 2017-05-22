@@ -23,7 +23,7 @@ class VolUp(IRule):
     @classmethod
     def judge(cls, data, index):
         data1 = data.loc[index]
-        data2 = data.loc[index-1]
+        data2 = data.loc[index - 1]
         if data1.volume >= data2.volume:
             return True
         else:
@@ -59,7 +59,7 @@ class TopClose(IRule):
     @classmethod
     def judge(cls, data, index):
         data1 = data.loc[index]
-        data2 = data.loc[index-1]
+        data2 = data.loc[index - 1]
         if data1.close == round(data2.close * 1.1, 2):
             return True
         else:
@@ -88,17 +88,18 @@ class NotHorizontalMulti(IRule):
         return False
 
 
-
 # 实体两连板后，当日高开2-6%，收板
 class TripleTopClose(IRule):
     @classmethod
     def judge(cls, data, index):
         data1 = data.loc[index]
-        data2 = data.loc[index-1]
-        start = index-2
-        end = index+1
-        return NotHorizontalMulti(3).judge(data, index) and TopClose.judge(data, index) and TopClose.judge(data, index - 1) \
-               and TopClose.judge(data, index - 2) and data1.open >= data2.close * 1.02 and data1.open <= data2.close * 1.06
+        data2 = data.loc[index - 1]
+        start = index - 2
+        end = index + 1
+        return NotHorizontalMulti(3).judge(data, index) and TopClose.judge(data, index) and TopClose.judge(data,
+                                                                                                           index - 1) \
+               and TopClose.judge(data,
+                                  index - 2) and data1.open >= data2.close * 1.02 and data1.open <= data2.close * 1.06
 
 
 # 实体两连板后，闷杀
@@ -106,9 +107,9 @@ class TripleTopCloseBad(IRule):
     @classmethod
     def judge(cls, data, index):
         data1 = data.loc[index]
-        data2 = data.loc[index-1]
-        start = index-3
-        end = index+1
+        data2 = data.loc[index - 1]
+        start = index - 3
+        end = index + 1
         return NotHorizontalMulti(3).judge(data, index) and TopClose.judge(data, index - 1) \
                and TopClose.judge(data, index - 2) and data1.high < data2.close
 
@@ -119,12 +120,14 @@ class DoubleTopClose(IRule):
         return NotHorizontalMulti(2).judge(data, index) and TopClose.judge(data, index) \
                and TopClose.judge(data, index - 1)
 
+
 class TopHatched(IRule):
     @classmethod
     def judge(cls, data, index):
         data1 = data.loc[index]
         data2 = data.loc[index-1]
         return data1.high == round(data2.close * 1.1, 2) and data1.high > data1.close and data1.high > data1.open
+
 
 # must use get_hist_data api
 class HighTurnover(IRule):
@@ -134,11 +137,28 @@ class HighTurnover(IRule):
         return data1.turnover > 70
 
 
+class Star(IRule):
+    @classmethod
+    def judge(cls, data, index):
+        data1 = data.loc[index]
+        return data1.high > data1.open and data1.high > data1.close and data1.low < data1.open and data1.low < data1.close \
+               and abs(data1.close - data1.open) / data1.open < 0.03
+
+
+class FuelUp(IRule):
+    @classmethod
+    def judge(cls, data, index):
+        data1 = data.loc[index]
+        data2 = data.loc[index - 1]
+
+        return Star.judge(data, index) and TopClose.judge(data, index - 1) and data1.low > data2.high and data1.volume>data2.volume *2
+
+
 class Strategy(IRule):
-    def __init__(self, ruleset = []):
+    def __init__(self, ruleset=[]):
         self.ruleset = ruleset
 
-    def addRule(self, rule:IRule):
+    def addRule(self, rule: IRule):
         self.ruleset.append(rule)
 
     def judge(self, data, index):
