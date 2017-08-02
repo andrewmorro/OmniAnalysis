@@ -17,20 +17,19 @@ class GeneralAnalysis(IAnalysis):
         rule = rule_class()
         return self.analysisByRule(rule, stock_list, start, end, hist)
 
-    def analysisByRule(self, rule, stock_list=['603777'] , start='2016-07-01', end=None, hist=False):
+    def analysisByRule(self, rule, stock_list=['603777'] , start='2016-07-01', end=None, hist=False, period=1):
         if end is None:
             end = datetime.datetime.now().strftime('%Y-%m-%d')
         if start is None:
             start = (datetime.datetime.now()-datetime.timedelta(days=7)).strftime('%Y-%m-%d')
         df = DataFrame(columns=['Code', 'Date'])
         for stock in stock_list:
-            print(stock)
             try:
                 if hist:
                     history = ts.get_hist_data(stock, start, end)
                 else:
                     history = ts.get_k_data(stock, start, end)
-                for i in history.index[1:]:
+                for i in history.index[period:]:
                     if rule.judge(history, i):
                         if hist:
                             df.loc[len(df)] = [stock, history.loc[i].name]
