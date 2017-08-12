@@ -12,10 +12,10 @@ class GeneralAnalysis(IAnalysis):
         pass
 
     # hist is a switch that tells the code to use get_hist_data api to fetch some special data such as turnover.
-    def analysisByRuleName(self,  rule_name='TripleTopClose', stock_list=['603777'], start=None, end=None, hist=False):
+    def analysisByRuleName(self,  rule_name='TripleTopClose', stock_list=['603777'], start=None, end=None, hist=False, period=1):
         rule_class = getattr(sys.modules['analysis.Rule'], rule_name)
         rule = rule_class()
-        return self.analysisByRule(rule, stock_list, start, end, hist)
+        return self.analysisByRule(rule, stock_list, start, end, hist, period)
 
     def analysisByRule(self, rule, stock_list=['603777'] , start='2016-07-01', end=None, hist=False, period=1):
         if end is None:

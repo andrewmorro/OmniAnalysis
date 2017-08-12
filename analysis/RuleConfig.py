@@ -1,5 +1,6 @@
 rule = dict(
     Rise = 'N天上涨M',
+    TurnoverMulti = '连续换手',
     NotHorizontal = '非一字板',
     TopClose = '涨停收盘',
     TripleTopClose = '实体两连板后，当日高开2-5%，收板',
@@ -17,5 +18,6 @@ rule = dict(
     TopHatched = '涨停未封',
     HighTurnover = '高换手',
     Star = '十字星',
-    FuelUp = '空中加油'
+    FuelUp = '空中加油',
+    Rule1 = '测试规则1'
 )

@@ -87,6 +87,17 @@ class NotHorizontalMulti(IRule):
                 return True
         return False
 
+# 连续换手板
+class TurnoverMulti(IRule):
+    def __init__(self, n):
+        self.n = n
+
+    def judge(self, data, index):
+        for i in range(self.n):
+            if NotHorizontal.judge(data, index - i) is False:
+                return False
+        return True
+
 
 # 实体两连板后，当日高开2-6%，收板
 class TripleTopClose(IRule):
@@ -152,6 +163,16 @@ class FuelUp(IRule):
         data2 = data.loc[index - 1]
 
         return Star.judge(data, index) and TopClose.judge(data, index - 1) and data1.low > data2.high and data1.volume>data2.volume *2
+
+# 测试规则1，板后跳空上下影中阳
+class Rule1(IRule):
+    @classmethod
+    def judge(cls, data, index):
+        data1 = data.loc[index]
+        data2 = data.loc[index - 1]
+        return TurnoverMulti(2).judge(data, index) and TopClose.judge(data, index - 1) \
+               and data1.high > data1.close and data1.close> data1.open and data1.open> data1.low and data1.low>data2.high and data1.volume > data2.volume * 2
+
 
 
 class Strategy(IRule):
