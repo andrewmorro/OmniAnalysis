@@ -21,10 +21,13 @@ stock_list = []
 
 # token for cache access
 token = 'doubletop2342342.xlsx'
+sample_token = 'sample_cache_23423908.xlsx'
 
 df = None
+sample = None
 try:
     df = pandas.read_excel(base_path+token,converters={'Code':str})
+    sample = pandas.read_excel(base_path+sample_token)
 except Exception:
     print('No cache found.')
 
@@ -51,7 +54,7 @@ def get_1M(stock, date):
         df = ts.get_tick_data(stock, date=date,pause=0.1,src='tt')
         df = df.sort_values(by='time')
         print('{} {} tick data retrived.'.format(stock, date))
-    except IOError:
+    except Exception:
         print('Error - Failed to retrive tick data.')
         return None
     result = []
@@ -105,32 +108,37 @@ if df is None:
 
     df = tt.analysisByRuleName(rule_name,stock_list,start='2016-06-01')
     df.to_excel(base_path+token)
-
 else:
-    print("Using cache...")
-result = []
-book = []
-for index, row in df.iterrows():
-    data = get_1M(row['Code'], row['Date'])
-    if data is not None and len(data) == 243:
-        book.append((row['Code'], row['Date']))
-        result.append(data)
+    print("Using cache for rule analysis...")
 
-print("Start clustering...")
-if len(result)<=0:
-    print('No Samples.')
-    exit(0)
-sample = pandas.DataFrame(result)
-print(sample)
+if sample is None:
+    result = []
+    book = []
+    for index, row in df.iterrows():
+        data = get_1M(row['Code'], row['Date'])
+        if data is not None and len(data) == 243:
+            book.append((row['Code'], row['Date']))
+            result.append(data)
 
-kmeans = KMeans(n_clusters=3)
-pred = kmeans.fit_predict(result,y=[len(result),243])
+    print("Start clustering...")
+    if len(result)<=0:
+        print('No Samples.')
+        exit(0)
+    sample = pandas.DataFrame(result)
+
+    sample.to_excel(base_path+sample_token)
+else:
+    print("Using cache for samples...")
+
+
+kmeans = KMeans(n_clusters=10)
+pred = kmeans.fit_predict(sample,y=[len(sample),243])
 print(kmeans.cluster_centers_)
 #plt.figure(figsize=(12, 12))
-plt.plot(kmeans.cluster_centers_[0])
-plt.plot(kmeans.cluster_centers_[1])
-plt.plot(kmeans.cluster_centers_[2])
+for center in kmeans.cluster_centers_:
+    plt.plot(center)
 plt.show()
+
 
 print(pred)
 
