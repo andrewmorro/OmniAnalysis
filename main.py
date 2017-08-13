@@ -4,48 +4,86 @@ from analysis import Rule
 import tushare as ts
 import datetime
 import numpy
+import pandas
+
 
 from sklearn.cluster import KMeans
+
+import matplotlib.pyplot as plt
+
 
 test = False
 #test = True
 
-
+base_path = 'F:\\BaiduSync\\trade\\总结\\量化\\cache\\'
 tt = GeneralAnalysis()
 stock_list = []
-if test:
-    stock_list = ['000856']
 
-else:
-    stock_list = ts.get_today_all()['code']
-    # print(len(stock_list))
+# token for cache access
+token = 'doubletop2342342.xlsx'
 
+df = None
+try:
+    df = pandas.read_excel(base_path+token,converters={'Code':str})
+except Exception:
+    print('No cache found.')
+
+
+
+def next_1M(the_time):
+    if the_time.time() == datetime.time(9, 25):
+        the_time = the_time + datetime.timedelta(minutes=5)
+    elif the_time.time() == datetime.time(11, 30):
+        the_time = the_time + datetime.timedelta(minutes=90)
+    else:
+        the_time = the_time + datetime.timedelta(minutes=1)
+    return the_time
 
 
 
 def get_1M(stock, date):
-    day = ts.get_hist_data(code=stock, start=date,end=date)
-    pre_close = day['close'].values[0]-day['price_change'].values[0]
+    df = None
+    try:
+        day = ts.get_hist_data(code=stock, start=date,end=date)
+        pre_close = day['close'].values[0]-day['price_change'].values[0]
 
-    df = ts.get_tick_data(stock, date=date)
-    df = df.sort_values(by='time')
-    time = datetime.time(9, 25)
-
+        #src : 数据源选择，可输入sn(新浪)、tt(腾讯)、nt(网易)，默认sn
+        df = ts.get_tick_data(stock, date=date,pause=0.1,src='tt')
+        df = df.sort_values(by='time')
+        print('{} {} tick data retrived.'.format(stock, date))
+    except IOError:
+        print('Error - Failed to retrive tick data.')
+        return None
     result = []
 
     # TODO:change to use sub string to match time - should achieve speed optimization
+    index_time = datetime.datetime.combine(datetime.date.today(),datetime.time(9, 25))
+    pct = 0;
     for index, row in df.iterrows():
-        temp_time = datetime.datetime.strptime(row['time'], '%H:%M:%S').time()
-        if temp_time >= time:
-            pct = numpy.round((row['price'] - pre_close)/pre_close*100,2)
-            result.append(pct)
-            if time == datetime.time(9, 25):
-                time = datetime.time(9, 30)
-            elif time == datetime.time(11, 30):
-                time = datetime.time(13, 00)
-            else:
-                time = (datetime.datetime.combine(datetime.date.today(), time) + datetime.timedelta(minutes=1)).time()
+        temp_time = datetime.datetime.combine(datetime.date.today(),datetime.datetime.strptime(row['time'],'%H:%M:%S').time())
+        delta = temp_time - index_time
+        if delta.days<0:
+            #current row falls behind index, skip.
+            continue
 
+        while delta.seconds >= 60 and delta.days >= 0:
+            # fill missing values
+            result.append(pct)
+            # update time to next index
+            index_time = next_1M(index_time)
+            delta = temp_time - index_time
+
+        if delta.seconds>=0 and delta.seconds<60:
+            pct = numpy.round((row['price'] - pre_close) / pre_close * 100, 2)
+            #print('{} - {}'.format(row['time'],pct))
+            result.append(pct)
+            # update time to next index
+            index_time = next_1M(index_time)
+
+    if len(result) < 240:
+        print('{} {} sample collected - {}'.format(stock, date, len(result)))
+    while len(result) < 243:
+        result.append(10.00)
     return result
 
 
@@ -55,18 +93,44 @@ def get_1M(stock, date):
 #
 # print(len(data))
 
-rule_name = 'DoubleTopClose'
+if df is None:
+    if test:
+        stock_list = ['000856']
 
-df = tt.analysisByRuleName(rule_name,stock_list,start='2017-04-01')
+    else:
 
+        stock_list = ts.get_today_all()['code']
+        # print(len(stock_list))
+    rule_name = 'DoubleTopClose'
+
+    df = tt.analysisByRuleName(rule_name,stock_list,start='2016-06-01')
+    df.to_excel(base_path+token)
+
+else:
+    print("Using cache...")
 result = []
 book = []
 for index, row in df.iterrows():
-    book.append((row['Code'], row['Date']))
     data = get_1M(row['Code'], row['Date'])
-    result.append(data)
+    if data is not None and len(data) == 243:
+        book.append((row['Code'], row['Date']))
+        result.append(data)
 
-pred = KMeans(n_clusters=3).fit_predict(result)
+print("Start clustering...")
+if len(result)<=0:
+    print('No Samples.')
+    exit(0)
+sample = pandas.DataFrame(result)
+print(sample)
+
+kmeans = KMeans(n_clusters=3)
+pred = kmeans.fit_predict(result,y=[len(result),243])
+print(kmeans.cluster_centers_)
+#plt.figure(figsize=(12, 12))
+plt.plot(kmeans.cluster_centers_[0])
+plt.plot(kmeans.cluster_centers_[1])
+plt.plot(kmeans.cluster_centers_[2])
+plt.show()
 
 print(pred)
 
