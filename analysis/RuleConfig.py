@@ -3,6 +3,7 @@ rule = dict(
     TurnoverMulti = '连续换手',
     NotHorizontal = '非一字板',
     TopClose = '涨停收盘',
+    MultiTopClose = '连板',
     TripleTopClose = '实体两连板后，当日高开2-5%，收板',
     TripleTopCloseBad = '实体两连板后，闷杀',
     DoubleTopLowOpenTopClose = '实体两连板，有水下，涨停收',
@@ -19,5 +20,7 @@ rule = dict(
     HighTurnover = '高换手',
     Star = '十字星',
     FuelUp = '空中加油',
-    Rule1 = '测试规则1'
+    TopFail = '炸板',
+    Rule1 = '测试规则1',
+    Rule2 = '测试规则2'
 )

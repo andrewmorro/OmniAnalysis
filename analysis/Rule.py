@@ -65,6 +65,15 @@ class TopClose(IRule):
         else:
             return False
 
+# 多个连续换手板
+class MultiTopClose(IRule):
+    @classmethod
+    def judge(cls, data, index, count):
+        for i in range(1, count+1):
+            if not TopClose.judge(data, index - i +1):
+                return False
+        return True
+
 
 # 非一字板
 class NotHorizontal(IRule):
@@ -173,7 +182,20 @@ class Rule1(IRule):
         return TurnoverMulti(2).judge(data, index) and TopClose.judge(data, index - 1) \
                and data1.high > data1.close and data1.close> data1.open and data1.open> data1.low and data1.low>data2.high and data1.volume > data2.volume * 2
 
+# 炸板
+class TopFail(IRule):
+    @classmethod
+    def judge(cls, data, index):
+        data1 = data.loc[index]
+        data2 = data.loc[index - 1]
+        return data1.high > data2.close * 1.1 -0.01 and data1.high > data1.close
 
+# 2018-03-03 300353 similar
+
+class Rule2(IRule):
+    @classmethod
+    def judge(cls, data, index):
+        return TopFail.judge(data,index) and MultiTopClose.judge(data,index-1 , 3)
 
 class Strategy(IRule):
     def __init__(self, ruleset=[]):

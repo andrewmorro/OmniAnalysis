@@ -20,7 +20,7 @@ tt = GeneralAnalysis()
 stock_list = []
 
 # token for cache access
-token = 'doubletop2342342.xlsx'
+token = 'Rule2-20180303.xlsx'
 sample_token = 'sample_cache_23423908.xlsx'
 
 df = None
@@ -104,9 +104,9 @@ if df is None:
 
         stock_list = ts.get_today_all()['code']
         # print(len(stock_list))
-    rule_name = 'DoubleTopClose'
+    rule_name = 'Rule2'
 
-    df = tt.analysisByRuleName(rule_name,stock_list,start='2016-06-01')
+    df = tt.analysisByRuleName(rule_name,stock_list,start='2017-02-01')
     df.to_excel(base_path+token)
 else:
     print("Using cache for rule analysis...")
@@ -131,7 +131,7 @@ else:
     print("Using cache for samples...")
 
 
-kmeans = KMeans(n_clusters=10)
+kmeans = KMeans(n_clusters=3)
 pred = kmeans.fit_predict(sample,y=[len(sample),243])
 print(kmeans.cluster_centers_)
 #plt.figure(figsize=(12, 12))
