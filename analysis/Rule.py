@@ -1,3 +1,6 @@
+import sys
+
+
 class IRule(object):
     @classmethod
     def judge(cls, data, index):
@@ -60,19 +63,23 @@ class TopClose(IRule):
     def judge(cls, data, index):
         data1 = data.loc[index]
         data2 = data.loc[index - 1]
-        if data1.close == round(data2.close * 1.1, 2):
+        if data1.close == round(data2.close * 1.1, 2) and data1.high != data1.low:
             return True
         else:
             return False
 
-# 多个连续换手板
+# 多个连续换手板(前N-1个板中至少有一个换手板）
 class MultiTopClose(IRule):
     @classmethod
     def judge(cls, data, index, count):
+        horizontal_flag = True
         for i in range(1, count+1):
+            # There has to be as least one turnover top k prior to date index.
+            if horizontal_flag and i < count + 1 and NotHorizontal.judge(data, index - i +1):
+                horizontal_flag = False
             if not TopClose.judge(data, index - i +1):
                 return False
-        return True
+        return not horizontal_flag
 
 
 # 非一字板
@@ -140,13 +147,13 @@ class DoubleTopClose(IRule):
         return NotHorizontalMulti(2).judge(data, index) and TopClose.judge(data, index) \
                and TopClose.judge(data, index - 1)
 
-
+# 冲板回落/炸板
 class TopHatched(IRule):
     @classmethod
     def judge(cls, data, index):
         data1 = data.loc[index]
         data2 = data.loc[index-1]
-        return data1.high == round(data2.close * 1.1, 2) and data1.high > data1.close and data1.high > data1.open
+        return data1.high == round(data2.close * 1.1, 2) and data1.high > data1.close and data1.high >= data1.open
 
 
 # must use get_hist_data api
@@ -192,10 +199,27 @@ class TopFail(IRule):
 
 # 2018-03-03 300353 similar
 
+
 class Rule2(IRule):
     @classmethod
     def judge(cls, data, index):
         return TopFail.judge(data,index) and MultiTopClose.judge(data,index-1 , 3)
+
+
+class RuleMatrix(IRule):
+
+    def __init__(self, rule_list):
+        self.rule_list = rule_list
+
+    def judge(self, data, index):
+        count = len(self.rule_list)
+        for i in range(count):
+            rule_class = getattr(sys.modules[__name__], self.rule_list[i])
+            rule = rule_class()
+            if not rule.judge(data, index - count + i + 1):
+                return False
+        return True
+
 
 class Strategy(IRule):
     def __init__(self, ruleset=[]):

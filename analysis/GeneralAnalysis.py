@@ -30,11 +30,14 @@ class GeneralAnalysis(IAnalysis):
                 else:
                     history = ts.get_k_data(stock, start, end)
                 for i in history.index[period:]:
-                    if rule.judge(history, i):
-                        if hist:
-                            df.loc[len(df)] = [stock, history.loc[i].name]
-                        else:
-                            df.loc[len(df)] = [stock, history.loc[i].date]
+                    try:
+                        if rule.judge(history, i):
+                            if hist:
+                                df.loc[len(df)] = [stock, history.loc[i].name]
+                            else:
+                                df.loc[len(df)] = [stock, history.loc[i].date]
+                    except Exception:
+                        continue
             except Exception:
                 continue
         return df

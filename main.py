@@ -20,8 +20,8 @@ tt = GeneralAnalysis()
 stock_list = []
 
 # token for cache access
-token = 'Rule2-20180303.xlsx'
-sample_token = 'sample_cache_23423908.xlsx'
+token = 'RuleMatrix-20180305.xlsx'
+sample_token = 'sample_cache_2345238.xlsx'
 
 df = None
 sample = None
@@ -104,9 +104,15 @@ if df is None:
 
         stock_list = ts.get_today_all()['code']
         # print(len(stock_list))
-    rule_name = 'Rule2'
 
-    df = tt.analysisByRuleName(rule_name,stock_list,start='2017-02-01')
+    # analyze by rule name
+    #rule_name = 'Rule2'
+    #df = tt.analysisByRuleName(rule_name,stock_list,start='2017-02-01')
+
+    # analyze by rule
+    rule_list = ['TopClose','TopClose','TopClose','TopHatched']
+    rule = Rule.RuleMatrix(rule_list)
+    df = tt.analysisByRule(rule,stock_list,start='2016-02-26')
     df.to_excel(base_path+token)
 else:
     print("Using cache for rule analysis...")
