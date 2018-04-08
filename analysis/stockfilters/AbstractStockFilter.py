@@ -12,7 +12,7 @@ class AbstractStockFilter(metaclass=ABCMeta):
     def filter(self, stockList, startdate, enddate):
         """ Analyze the stocks in the stockList within the data range and filter by the rules defined in the concrete class"""
 
-        executor = ThreadPoolExecutor(max_workers=40)
+        executor = ThreadPoolExecutor(max_workers=10)
         df = DataFrame(columns=['Code', 'Date'])
         with executor:
             mds = MarketDataService()

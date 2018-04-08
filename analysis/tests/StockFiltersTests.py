@@ -1,7 +1,8 @@
 import unittest
 from analysis.stockfilters.RepairedTopFilter import RepairedTopFilter
 from analysis.marketdata.MarketDataService import MarketDataService
-import threading
+from export.ExcelExporter import ExcelExporter
+
 
 class StockFiltersTest(unittest.TestCase):
 
@@ -20,9 +21,10 @@ class StockFiltersTest(unittest.TestCase):
     def testFindRepairedTop(self):
         mds = MarketDataService()
         filter = RepairedTopFilter()
-        # df = filter.filter(mds.getAllTickers(),'2018-03-01','2018-04-01')
-        df = filter.filter(['300624', '002846', '300676'], '2018-03-01', '2018-04-01')
-        print(df)
+        df = filter.filter(mds.getAllTickers(), '2018-03-01', '2018-04-01')
+        # df = filter.filter(['300624', '002846', '300676'], '2018-03-01', '2018-04-01')
+        df.to_excel('F:\\BaiduSync\\trade\\总结\\量化\\cache\\20180407.xlsx', '烂板')
+        #print(df)
 
 
 if __name__ == '__main__':
