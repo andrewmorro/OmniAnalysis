@@ -22,5 +22,6 @@ rule = dict(
     FuelUp = '空中加油',
     TopFail = '炸板',
     Rule1 = '测试规则1',
-    Rule2 = '测试规则2'
+    Rule2 = '测试规则2',
+    NStyle = 'N字板'
 )

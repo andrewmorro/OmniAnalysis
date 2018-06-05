@@ -205,6 +205,22 @@ class Rule2(IRule):
     def judge(cls, data, index):
         return TopFail.judge(data,index) and MultiTopClose.judge(data,index-1 , 3)
 
+class NStyle(IRule):
+    @classmethod
+    def judge(cls, data, index):
+        data1 = data.loc[index-3]
+        data2 = data.loc[index-2]
+        data3 = data.loc[index-1]
+        data4 = data.loc[index]
+        flag1 = False
+        flag2 = False
+        if data2.high > data2.open and data2.high > data2.close and data2.open > data1.close:
+            flag1 = True
+        if data3.low < data2.low and data3.high < data2.high:
+            flag2 = True
+        return TopClose.judge(data,index-3) and TopClose.judge(data,index) and flag1 and flag2
+
+
 
 class RuleMatrix(IRule):
 

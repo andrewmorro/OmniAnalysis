@@ -10,18 +10,20 @@ import os
 base_path = 'F:\\BaiduSync\\trade\\总结\\量化\\cache\\'
 if os.environ["ENV"] == "COMPANY":
     base_path = 'D:\\百度云同步盘\\trade\\总结\\量化\\cache\\'
+elif os.environ['ENV'] == "MAC":
+    base_path = '/Users/andrew/百度云同步盘/trade/总结/量化/'
 
 print(base_path)
 
 
-#test = False
-test = True
+test = False
+#test = True
 
 tt = GeneralAnalysis()
 stock_list = []
 
 # token for cache access
-token = 'RuleMatrix-20180306.xlsx'
+token = 'RuleNStyle-20180605.xlsx'
 sample_token = 'sample_cache_7852.xlsx'
 
 df = None
@@ -52,22 +54,23 @@ if df is None:
         # print(len(stock_list))
 
     # analyze by rule name
-    #rule_name = 'Rule2'
-    #df = tt.analysisByRuleName(rule_name,stock_list,start='2017-02-01')
+    rule_name = 'NStyle'
+    df = tt.analysisByRuleName(rule_name,stock_list,start='2018-05-01')
 
     # analyze by rule
-    rule_list = ['TopClose','TopClose','TopClose']
-    rule = Rule.RuleMatrix(rule_list)
-    df = tt.analysisByRule(rule,stock_list,start='2016-02-26')
+    #rule_list = ['TopClose','TopClose','TopClose']
+    #rule = Rule.RuleMatrix(rule_list)
+    #df = tt.analysisByRule(rule,stock_list,start='2016-02-26')
+
     df.to_excel(base_path+token)
 else:
     print("Using cache for rule analysis...")
 
 
-sample = ClusterAnalysis.prepare_sample(base_path+sample_token, df)
-pred = ClusterAnalysis.show_clustered(sample, 3)
+#sample = ClusterAnalysis.prepare_sample(base_path+sample_token, df)
+#pred = ClusterAnalysis.show_clustered(sample, 3)
 
-print(pred[2])
+#print(pred[2])
 
 # df.to_excel(r'F:\BaiduSync\trade\总结\量化\{}-{}.xlsx'.format(RuleConfig.rule[rule_name],datetime.datetime.now().strftime('%Y-%m-%d-%H-%M')), sheet_name=RuleConfig.rule[rule_name])
 
