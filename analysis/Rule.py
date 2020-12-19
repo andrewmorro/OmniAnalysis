@@ -27,7 +27,7 @@ class VolUp(IRule):
     def judge(cls, data, index):
         data1 = data.loc[index]
         data2 = data.loc[index - 1]
-        if data1.volume >= data2.volume:
+        if data1.vol >= data2.vol:
             return True
         else:
             return False
@@ -38,7 +38,7 @@ class VolDown(IRule):
     def judge(cls, data, index):
         data1 = data.loc[index]
         data2 = data.loc[index - 1]
-        if data1.volume < data2.volume:
+        if data1.vol < data2.vol:
             return True
         else:
             return False
@@ -51,33 +51,33 @@ class VolExplode(IRule):
     def judge(self, data, index):
         data1 = data.loc[index]
         data2 = data.loc[index - 1]
-        if data1.volume >= data2.volume * self.n:
+        if data1.vol >= data2.vol * self.n:
             return True
         else:
             return False
 
 
-# 涨停收盘
+# 换手涨停收盘
 class TopClose(IRule):
     @classmethod
     def judge(cls, data, index):
         data1 = data.loc[index]
-        data2 = data.loc[index - 1]
-        if data1.close == round(data2.close * 1.1, 2) and data1.high != data1.low:
+        if data1.close == round(data1.pre_close * 1.1, 2) and data1.high != data1.low:
             return True
         else:
             return False
 
+
 # 多个连续换手板(前N-1个板中至少有一个换手板）
 class MultiTopClose(IRule):
     @classmethod
-    def judge(cls, data, index, count):
+    def judge(cls, data, index, count=2):
         horizontal_flag = True
-        for i in range(1, count+1):
+        for i in range(1, count + 1):
             # There has to be as least one turnover top k prior to date index.
-            if horizontal_flag and i < count + 1 and NotHorizontal.judge(data, index - i +1):
+            if horizontal_flag and i < count + 1 and NotHorizontal.judge(data, index - i + 1):
                 horizontal_flag = False
-            if not TopClose.judge(data, index - i +1):
+            if not TopClose.judge(data, index - i + 1):
                 return False
         return not horizontal_flag
 
@@ -102,6 +102,7 @@ class NotHorizontalMulti(IRule):
             if NotHorizontal.judge(data, index - i) is True:
                 return True
         return False
+
 
 # 连续换手板
 class TurnoverMulti(IRule):
@@ -147,13 +148,13 @@ class DoubleTopClose(IRule):
         return NotHorizontalMulti(2).judge(data, index) and TopClose.judge(data, index) \
                and TopClose.judge(data, index - 1)
 
+
 # 冲板回落/炸板
 class TopHatched(IRule):
     @classmethod
     def judge(cls, data, index):
         data1 = data.loc[index]
-        data2 = data.loc[index-1]
-        return data1.high == round(data2.close * 1.1, 2) and data1.high > data1.close and data1.high >= data1.open
+        return data1.high == round(data1.pre_close * 1.1, 2) and data1.high > data1.close and data1.high >= data1.open
 
 
 # must use get_hist_data api
@@ -178,7 +179,9 @@ class FuelUp(IRule):
         data1 = data.loc[index]
         data2 = data.loc[index - 1]
 
-        return Star.judge(data, index) and TopClose.judge(data, index - 1) and data1.low > data2.high and data1.volume>data2.volume *2
+        return Star.judge(data, index) and TopClose.judge(data,
+                                                          index - 1) and data1.low > data2.high and data1.vol > data2.vol * 2
+
 
 # 测试规则1，板后跳空上下影中阳
 class Rule1(IRule):
@@ -187,15 +190,16 @@ class Rule1(IRule):
         data1 = data.loc[index]
         data2 = data.loc[index - 1]
         return TurnoverMulti(2).judge(data, index) and TopClose.judge(data, index - 1) \
-               and data1.high > data1.close and data1.close> data1.open and data1.open> data1.low and data1.low>data2.high and data1.volume > data2.volume * 2
+               and data1.high > data1.close and data1.close > data1.open and data1.open > data1.low and data1.low > data2.high and data1.vol > data2.vol * 2
+
 
 # 炸板
 class TopFail(IRule):
     @classmethod
     def judge(cls, data, index):
         data1 = data.loc[index]
-        data2 = data.loc[index - 1]
-        return data1.high > data2.close * 1.1 -0.01 and data1.high > data1.close
+        return data1.high > data1.pre_close * 1.1 - 0.01 and data1.high > data1.close
+
 
 # 2018-03-03 300353 similar
 
@@ -203,14 +207,17 @@ class TopFail(IRule):
 class Rule2(IRule):
     @classmethod
     def judge(cls, data, index):
-        return TopFail.judge(data,index) and MultiTopClose.judge(data,index-1 , 3)
+        return TopFail.judge(data, index) and MultiTopClose.judge(data, index - 1, 3)
+
 
 class NStyle(IRule):
     @classmethod
     def judge(cls, data, index):
-        data1 = data.loc[index-3]
-        data2 = data.loc[index-2]
-        data3 = data.loc[index-1]
+        if index < 3:
+            return False
+        data1 = data.loc[index - 3]
+        data2 = data.loc[index - 2]
+        data3 = data.loc[index - 1]
         data4 = data.loc[index]
         flag1 = False
         flag2 = False
@@ -218,8 +225,7 @@ class NStyle(IRule):
             flag1 = True
         if data3.low < data2.low and data3.high < data2.high:
             flag2 = True
-        return TopClose.judge(data,index-3) and TopClose.judge(data,index) and flag1 and flag2
-
+        return TopClose.judge(data, index - 3) and TopClose.judge(data, index) and flag1 and flag2
 
 
 class RuleMatrix(IRule):

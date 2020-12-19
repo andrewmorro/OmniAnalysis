@@ -7,11 +7,12 @@ import pandas
 import os
 
 
-base_path = 'F:\\BaiduSync\\trade\\总结\\量化\\cache\\'
-if os.environ["ENV"] == "COMPANY":
-    base_path = 'D:\\百度云同步盘\\trade\\总结\\量化\\cache\\'
-elif os.environ['ENV'] == "MAC":
-    base_path = '/Users/andrew/百度云同步盘/trade/总结/量化/'
+base_path = 'D:\\BaiduSync\\trade\\总结\\量化\\cache\\'
+if "ENV" in os.environ:
+    if os.environ["ENV"] == "COMPANY":
+        base_path = 'D:\\百度云同步盘\\trade\\总结\\量化\\cache\\'
+    elif os.environ['ENV'] == "MAC":
+        base_path = '/Users/andrew/百度云同步盘/trade/总结/量化/'
 
 print(base_path)
 
@@ -49,13 +50,14 @@ if df is None:
         stock_list = ['300353']
 
     else:
-
-        stock_list = ts.get_today_all()['code']
+        pro = ts.pro_api()
+        df = pro.daily(trade_date='20201218')
+        stock_list = df['ts_code']
         # print(len(stock_list))
 
     # analyze by rule name
-    rule_name = 'NStyle'
-    df = tt.analysisByRuleName(rule_name,stock_list,start='2018-05-01')
+    rule_name = 'MultiTopClose'
+    df = tt.analysisByRuleName(rule_name,stock_list,start='20201201')
 
     # analyze by rule
     #rule_list = ['TopClose','TopClose','TopClose']

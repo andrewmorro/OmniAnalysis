@@ -1,5 +1,5 @@
 
-from analysis.marketdata.MarketDataService import MinDataService
+from analysis.marketdata.MarketDataService import MarketDataService
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 import pandas
@@ -14,7 +14,7 @@ def prepare_sample(path, df):
     except Exception:
         print('Sample cache not found.')
 
-    mdService = MinDataService()
+    mdService = MarketDataService()
     if sample is None:
         result = []
         book = []
