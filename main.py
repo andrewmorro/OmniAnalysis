@@ -36,7 +36,7 @@ except Exception:
     print('Dataframe cache not found.')
 
 
-
+force_save = True
 
 
 # stock = '000856'
@@ -45,7 +45,7 @@ except Exception:
 #
 # print(len(data))
 
-if df is None:
+if df is None or force_save:
     if test:
         stock_list = ['300353']
 
@@ -53,6 +53,7 @@ if df is None:
         pro = ts.pro_api()
         df = pro.daily(trade_date='20201218')
         stock_list = df['ts_code']
+        #stock_list = ['002612.SZ']
         # print(len(stock_list))
 
     # analyze by rule name

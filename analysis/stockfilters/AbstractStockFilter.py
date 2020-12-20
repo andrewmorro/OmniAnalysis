@@ -25,7 +25,7 @@ class AbstractStockFilter(metaclass=ABCMeta):
 
             for result in executor.map(lambda p: self.judge(*p), args):
                 if result[2]:
-                    df.loc[len(df)] = [result[0], result[1]]
+                    df.iloc[len(df)] = [result[0], result[1]]
 
         return df
 
